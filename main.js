@@ -1,6 +1,6 @@
-import { sortByPriceAsc } from "./sort";
+import { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec } from "./sort";
 
-let books, categories = ["All"], authors = [];
+let books, categories = [], authors = [], priceIntervall = ["0-200", "201-300", "301-400", "401-500", "501-600", "601-700"];
 
 async function getJSON(url) {
   let rawData = await fetch(url);
@@ -10,12 +10,11 @@ async function getJSON(url) {
 }
 
 async function start() {
-  books = await getJSON('/books.json')
+  books = await getJSON('/books.json');
   getCategories(books);
-  getAuthors(books)
-  console.log(books)
-  console.log(authors)
-  getHtml();
+  getAuthors(books);
+  addFilters();
+  displayBooks(books);
 }
 
 function getCategories(books) {
@@ -24,7 +23,7 @@ function getCategories(books) {
       categories.push(book.category);
     }
   });
-  categories.sort((a, b) => a.localeCompare(b));
+  categories.sort();
 }
 
 function getAuthors(books) {
@@ -33,10 +32,76 @@ function getAuthors(books) {
       authors.push(book.author);
     }
   });
-  authors.sort((a, b) => a.localeCompare(b));
+  authors.sort();
 }
 
-function displayBooks() {
+function getMatchingArray(searchTerm) {
+  if (categories.includes(searchTerm)) {
+    return categories;
+  } else if (authors.includes(searchTerm)) {
+    return authors;
+  } else if (priceIntervall.includes(searchTerm)) {
+    return priceIntervall;
+  } else {
+    return books; // No match found
+  }
+}
+
+function addFilters() {
+  let filtersHtml = /*html*/`
+  <select class="filters">
+    <optgroup label="Category" id="option">
+      <option>All</option>
+      ${categories.map(category => `<option>${category}</option>`).join("")}
+    </optgroup>
+    <optgroup label="Prices" id="option">
+      <option>All</option>
+      ${priceIntervall.map(prices => `<option>${prices}</option>`).join("")}
+    </optgroup>
+    <optgroup label="Author" id="option">
+      <option>All</option>
+      ${authors.map(author => `<option>${author}</option>`).join("")}
+    </optgroup>
+  </select>
+  <select>
+    <optgroup label="Category">
+      ${categories.map(category => `<option>${category}</option>`).join("")}
+    </optgroup>
+    <optgroup label="Prices">
+      ${priceIntervall.map(prices => `<option>${prices}</option>`).join("")}
+    </optgroup>
+    <optgroup label="Author">
+      ${authors.map(author => `<option>${author}</option>`).join("")}
+    </optgroup>
+  </select>
+  `;
+
+  document.querySelector('.filter-container').innerHTML = filtersHtml;
+
+  const filters = document.querySelector(".filters");
+  filters.addEventListener("change", async event => {
+    const filter = event.target.value;
+    let matchingArray = getMatchingArray(filter);
+
+    books = await getJSON('/books.json')
+    let filteredBooks;
+    if (matchingArray === categories) {
+      filteredBooks = books.filter(book => book.category === filter);
+    } else if (matchingArray === authors) {
+      filteredBooks = books.filter(book => book.author.includes(filter));
+    } else if (matchingArray === priceIntervall) {
+      const [minPrice, maxPrice] = filter.split('-').map(parseFloat);
+      filteredBooks = books.filter(book => book.price >= minPrice && book.price <= maxPrice);
+    } else {
+      filteredBooks = books;
+    }
+
+    // Update the product container with the filtered books
+    displayBooks(filteredBooks);
+  });
+}
+
+function displayBooks(books) {
   let productsHtml = "";
   for (let i = 0; i < books.length; i++) {
     productsHtml += /*html*/`
@@ -51,18 +116,7 @@ function displayBooks() {
       `;
   }
 
-  // Create the HTML structure
-  const html = /*html*/`
-    <div class="row" id="product-container">
-      ${productsHtml}
-    </div>
-  `;
-
-  document.querySelector('main').innerHTML = html;
-}
-
-function getHtml() {
-  displayBooks();
+  document.querySelector('#product-container').innerHTML = productsHtml;
 
   // Attach a click event listener to each "Details" button
   const detailsButtons = document.querySelectorAll('.details-button');
@@ -70,7 +124,6 @@ function getHtml() {
     detailsButtons[i].addEventListener('click', function (event) {
       const title = this.dataset.title;
       const book = books.find((book) => book.title === title);
-      console.log(book);
     });
   }
 }

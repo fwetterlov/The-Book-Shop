@@ -26,4 +26,4 @@ function sortByTitleDec(books) {
   return books;
 }
 
-export { sortByPriceAsc };
+export { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec };

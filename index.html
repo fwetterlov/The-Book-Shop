@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Book Shop</title>
+  <link rel="icon" href="/img/icon.png" type="image/icon type">
   <link rel="stylesheet" href="/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,8 +36,9 @@
               <a href="/products" class="nav-link" aria-current="page" data-link>Products</a>
             </li>
             <li class="nav-item">
-              <span class="bi bi-cart-fill"> </span>
-
+              <button>
+                <i class="bi bi-cart-fill"> </i>
+              </button>
             </li>
           </ul>
         </div>
@@ -44,8 +46,10 @@
     </div>
   </header>
 
-  <div class="app"></div>
-  <main></main>
+  <main>
+    <div class="filter-container"></div>
+    <div class="row" id="product-container"></div>
+  </main>
   <script type="module" src="/main.js"></script>
 
   <footer style="border-radius: 10px;">
