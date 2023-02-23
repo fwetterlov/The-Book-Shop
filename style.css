@@ -95,6 +95,11 @@ footer {
   object-fit: cover;
 }
 
+.author {
+  color: grey;
+  font-size: 14px;
+}
+
 .price {
   color: grey;
   font-size: 14px;

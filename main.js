@@ -1,6 +1,6 @@
 import { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec, sortByAuthorAsc, sortByAuthorDec } from "./sort";
 
-let books, categories = [], authors = [],
+let books, chosenFilter = "All", chosenSort, categories = [], authors = [],
   priceIntervall = ["0-200", "201-300", "301-400", "401-500", "501-600", "601-700"];
 
 async function getJSON(url) {
@@ -14,8 +14,8 @@ async function start() {
   books = await getJSON('/books.json');
   getCategories(books);
   getAuthors(books);
-  addFilters();
-  displayBooks(books);
+  addFiltersAndSort();
+  displayBooks();
 }
 
 function getCategories(books) {
@@ -48,7 +48,7 @@ function getMatchingArray(searchTerm) {
   }
 }
 
-function addFilters() {
+function addFiltersAndSort() {
   let filtersHtml = /*html*/`
   <select class="filters">
     <option>Filtering</option>
@@ -87,76 +87,72 @@ function addFilters() {
   //FILTERING
   const filters = document.querySelector(".filters");
   filters.addEventListener("change", async event => {
-    const filter = event.target.value;
-    let matchingArray = getMatchingArray(filter);
-
-    books = await getJSON('/books.json');
-    let filteredBooks;
-    switch (matchingArray) {
-      case categories:
-        filteredBooks = books.filter(book => book.category === filter);
-        break;
-      case authors:
-        filteredBooks = books.filter(book => book.author.includes(filter));
-        break;
-      case priceIntervall:
-        const [minPrice, maxPrice] = filter.split('-').map(parseFloat);
-        filteredBooks = books.filter(book => book.price >= minPrice && book.price <= maxPrice);
-        break;
-      default:
-        filteredBooks = books;
-        break;
-    }
-
-    // Update the product container with the filtered books
-    displayBooks(filteredBooks);
+    chosenFilter = event.target.value;
+    displayBooks();
   });
 
   //SORTING
   const sorting = document.querySelector(".sorting");
   sorting.addEventListener("change", async event => {
-    const sortType = event.target.value.toLowerCase();
-
-    books = await getJSON('/books.json')
-    let sortedBooks;
-    switch (sortType) {
-      case "title ascending":
-        sortedBooks = sortByTitleAsc(books);
-        break;
-      case "title descending":
-        sortedBooks = sortByTitleDec(books);
-        break;
-      case "price ascending":
-        sortedBooks = sortByPriceAsc(books);
-        break;
-      case "price descending":
-        sortedBooks = sortByPriceDec(books);
-        break;
-      case "author ascending":
-        sortedBooks = sortByAuthorAsc(books)
-        break;
-      case "author descending":
-        sortedBooks = sortByAuthorDec(books)
-        break;
-      default:
-        sortedBooks = books;
-    }
-
-    // Update the product container with the sorted books
-    displayBooks(sortedBooks);
+    chosenSort = event.target.value.toLowerCase();
+    displayBooks();
   });
 }
 
-function displayBooks(books) {
+function displayBooks() {
+
+  let matchingArray = getMatchingArray(chosenFilter);
+  let filteredBooks;
+  switch (matchingArray) {
+    case categories:
+      filteredBooks = books.filter(book => book.category === chosenFilter);
+      break;
+    case authors:
+      filteredBooks = books.filter(book => book.author.includes(chosenFilter));
+      break;
+    case priceIntervall:
+      const [minPrice, maxPrice] = chosenFilter.split('-').map(parseFloat);
+      filteredBooks = books.filter(book => book.price >= minPrice && book.price <= maxPrice);
+      break;
+    default:
+      filteredBooks = books;
+      break;
+  }
+
+  let sortedBooks;
+  switch (chosenSort) {
+    case "title ascending":
+      sortedBooks = sortByTitleAsc(filteredBooks);
+      break;
+    case "title descending":
+      sortedBooks = sortByTitleDec(filteredBooks);
+      break;
+    case "price ascending":
+      sortedBooks = sortByPriceAsc(filteredBooks);
+      break;
+    case "price descending":
+      sortedBooks = sortByPriceDec(filteredBooks);
+      break;
+    case "author ascending":
+      sortedBooks = sortByAuthorAsc(filteredBooks)
+      break;
+    case "author descending":
+      sortedBooks = sortByAuthorDec(filteredBooks)
+      break;
+    default:
+      sortedBooks = filteredBooks;
+  }
+
   let productsHtml = "";
-  for (let i = 0; i < books.length; i++) {
+  for (let i = 0; i < sortedBooks.length; i++) {
     productsHtml += /*html*/`
       <div class="card col-lg-2 col-md-3 col-sm-5 col-12">
-        <img src="${books[i].imagePath}" alt="${books[i].title}" style="width:100%">
-        <h1>${books[i].title}</h1>
-        <p class="price">${books[i].price.toFixed(2)}kr</p>
-        <p>${books[i].category}</p>
-        <p><button type="button" class="btn btn-light details-button" data-mdb-ripple-color="dark" data-title="${books[i].title}">Details</button>
+        <img src="${sortedBooks[i].imagePath}" alt="${sortedBooks[i].title}" style="width:100%">
+        <h1>${sortedBooks[i].title}</h1>
+        <p class ="author">${sortedBooks[i].author}</p>
+        <p class="price">${sortedBooks[i].price.toFixed(2)}kr</p>
+        <p>${sortedBooks[i].category}</p>
+        <p><button type="button" class="btn btn-light details-button" data-mdb-ripple-color="dark" data-title="${sortedBooks[i].title}">Details</button>
         <button type="button" class="btn btn-light" data-mdb-ripple-color="dark">Add to cart</button></p>
       </div>
       `;
