@@ -26,4 +26,18 @@ function sortByTitleDec(books) {
   return books;
 }
 
-export { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec };
+function sortByAuthorAsc(books) {
+  books.sort((a, b) => {
+    return a.author.localeCompare(b.author);
+  });
+  return books;
+}
+
+function sortByAuthorDec(books) {
+  books.sort((a, b) => {
+    return b.author.localeCompare(a.author);
+  });
+  return books;
+}
+
+export { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec, sortByAuthorAsc, sortByAuthorDec };

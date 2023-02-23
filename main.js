@@ -1,6 +1,7 @@
-import { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec } from "./sort";
+import { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec, sortByAuthorAsc, sortByAuthorDec } from "./sort";
 
-let books, categories = [], authors = [], priceIntervall = ["0-200", "201-300", "301-400", "401-500", "501-600", "601-700"];
+let books, categories = [], authors = [],
+  priceIntervall = ["0-200", "201-300", "301-400", "401-500", "501-600", "601-700"];
 
 async function getJSON(url) {
   let rawData = await fetch(url);
@@ -50,6 +51,7 @@ function getMatchingArray(searchTerm) {
 function addFilters() {
   let filtersHtml = /*html*/`
   <select class="filters">
+    <option>Filtering</option>
     <optgroup label="Category" id="option">
       <option>All</option>
       ${categories.map(category => `<option>${category}</option>`).join("")}
@@ -63,41 +65,85 @@ function addFilters() {
       ${authors.map(author => `<option>${author}</option>`).join("")}
     </optgroup>
   </select>
-  <select>
-    <optgroup label="Category">
-      ${categories.map(category => `<option>${category}</option>`).join("")}
+  <select class="sorting">
+    <option>Sorting</option>
+    <optgroup label="Price">
+      <option>Price Ascending</option>
+      <option>Price Descending</option>
     </optgroup>
-    <optgroup label="Prices">
-      ${priceIntervall.map(prices => `<option>${prices}</option>`).join("")}
+    <optgroup label="Title">
+      <option>Title Ascending</option>
+      <option>Title Descending</option>
     </optgroup>
     <optgroup label="Author">
-      ${authors.map(author => `<option>${author}</option>`).join("")}
+      <option>Author Ascending</option>
+      <option>Author Descending</option>
     </optgroup>
   </select>
   `;
 
   document.querySelector('.filter-container').innerHTML = filtersHtml;
 
+  //FILTERING
   const filters = document.querySelector(".filters");
   filters.addEventListener("change", async event => {
     const filter = event.target.value;
     let matchingArray = getMatchingArray(filter);
 
-    books = await getJSON('/books.json')
+    books = await getJSON('/books.json');
     let filteredBooks;
-    if (matchingArray === categories) {
-      filteredBooks = books.filter(book => book.category === filter);
-    } else if (matchingArray === authors) {
-      filteredBooks = books.filter(book => book.author.includes(filter));
-    } else if (matchingArray === priceIntervall) {
-      const [minPrice, maxPrice] = filter.split('-').map(parseFloat);
-      filteredBooks = books.filter(book => book.price >= minPrice && book.price <= maxPrice);
-    } else {
-      filteredBooks = books;
+    switch (matchingArray) {
+      case categories:
+        filteredBooks = books.filter(book => book.category === filter);
+        break;
+      case authors:
+        filteredBooks = books.filter(book => book.author.includes(filter));
+        break;
+      case priceIntervall:
+        const [minPrice, maxPrice] = filter.split('-').map(parseFloat);
+        filteredBooks = books.filter(book => book.price >= minPrice && book.price <= maxPrice);
+        break;
+      default:
+        filteredBooks = books;
+        break;
     }
 
     // Update the product container with the filtered books
     displayBooks(filteredBooks);
+  });
+
+  //SORTING
+  const sorting = document.querySelector(".sorting");
+  sorting.addEventListener("change", async event => {
+    const sortType = event.target.value.toLowerCase();
+
+    books = await getJSON('/books.json')
+    let sortedBooks;
+    switch (sortType) {
+      case "title ascending":
+        sortedBooks = sortByTitleAsc(books);
+        break;
+      case "title descending":
+        sortedBooks = sortByTitleDec(books);
+        break;
+      case "price ascending":
+        sortedBooks = sortByPriceAsc(books);
+        break;
+      case "price descending":
+        sortedBooks = sortByPriceDec(books);
+        break;
+      case "author ascending":
+        sortedBooks = sortByAuthorAsc(books)
+        break;
+      case "author descending":
+        sortedBooks = sortByAuthorDec(books)
+        break;
+      default:
+        sortedBooks = books;
+    }
+
+    // Update the product container with the sorted books
+    displayBooks(sortedBooks);
   });
 }
 
@@ -124,6 +170,7 @@ function displayBooks(books) {
     detailsButtons[i].addEventListener('click', function (event) {
       const title = this.dataset.title;
       const book = books.find((book) => book.title === title);
+      console.log(book);
     });
   }
 }
