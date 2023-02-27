@@ -1,6 +1,6 @@
 import { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec, sortByAuthorAsc, sortByAuthorDec } from "./sort";
 
-let books, chosenFilter = "All", chosenSort, categories = [], authors = [],
+let books, shopCart, chosenFilter = "All", chosenSort, categories = [], authors = [],
   priceIntervall = ["0-200", "201-300", "301-400", "401-500", "501-600", "601-700"];
 
 async function getJSON(url) {
@@ -153,12 +153,18 @@ function displayBooks() {
         <p class="price">${sortedBooks[i].price.toFixed(2)}kr</p>
         <p>${sortedBooks[i].category}</p>
         <p><button type="button" class="btn btn-light details-button" data-mdb-ripple-color="dark" data-title="${sortedBooks[i].title}">Details</button>
-        <button type="button" class="btn btn-light" data-mdb-ripple-color="dark">Add to cart</button></p>
+        <button type="button" class="btn btn-light add-button" data-mdb-ripple-color="dark" data-title="${sortedBooks[i].title}">Add to cart</button></p>
       </div>
       `;
   }
 
   document.querySelector('#product-container').innerHTML = productsHtml;
+
+  const shoppingCartButton = document.getElementById("shoppingcart");
+  shoppingCartButton.addEventListener("click", function () {
+    // Your code to handle the button click goes here
+    console.log("Shopping cart button clicked!");
+  });
 
   // Attach a click event listener to each "Details" button
   const detailsButtons = document.querySelectorAll('.details-button');
@@ -167,8 +173,44 @@ function displayBooks() {
       const title = this.dataset.title;
       const book = books.find((book) => book.title === title);
       console.log(book);
+
+      let detailsHtml = "";
+      detailsHtml += /*html*/`
+      <div class="modal" id="modal-content">
+        <div class="modal-header">
+          <h2>${book.title}</h2>
+          <button class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+          <img src="${book.imagePath}" alt="${book.title}">
+          <p>Author: ${book.author}</p>
+          <p>Category: ${book.category}</p>
+          <p>Description: ${book.description}</p>
+          <p>Price: $${book.price}</p>
+        </div>
+      </div>
+      `;
+
+      //document.body.insertAdjacentHTML('beforeend', detailsHtml);
+      document.querySelector('.modal-container').innerHTML = detailsHtml;
+
+      const closeButton = document.querySelector('.close-button');
+      closeButton.addEventListener('click', function (event) {
+        document.querySelector('.modal-container').innerHTML = "";
+      });
     });
   }
+
+  // Attach a click event listener to each "Details" button
+  const addButtons = document.querySelectorAll('.add-button');
+  for (let i = 0; i < addButtons.length; i++) {
+    addButtons[i].addEventListener('click', function (event) {
+      const title = this.dataset.title;
+      const book = books.find((book) => book.title === title);
+      console.log(book)
+    });
+  }
+
 }
 
 start();

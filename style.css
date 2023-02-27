@@ -12,13 +12,18 @@
   font-family: 'Labrada', serif;
 }
 
-.navbar-nav .nav-item .nav-link {
-  color: #FFFFFF;
+#shoppingcart {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 10px;
+  margin-right: 10px;
+  z-index: 9999;
+  /* Add any other styles as needed */
 }
 
-.navbar-nav .nav-item .nav-link:hover,
-.navbar-nav .nav-item .nav-link:focus {
-  color: pink;
+#shoppingcart:hover {
+  background-color: pink;
 }
 
 span {
@@ -128,4 +133,20 @@ footer {
   border: 1px solid #ccc;
   margin-right: 10px;
   margin-left: 10px;
+}
+
+#modal-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  max-width: 600px;
+  max-height: 80%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
