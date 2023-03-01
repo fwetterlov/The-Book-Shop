@@ -12,12 +12,16 @@
   font-family: 'Labrada', serif;
 }
 
+.bi-cart-fill {
+  font-size: 21px;
+}
+
 #shoppingcart {
   position: absolute;
   top: 0;
   right: 0;
-  margin-top: 10px;
-  margin-right: 10px;
+  margin-top: 5px;
+  margin-right: 5px;
   z-index: 9999;
   /* Add any other styles as needed */
 }
@@ -137,16 +141,42 @@ footer {
 
 #modal-content {
   display: flex;
-  justify-content: center;
-  align-items: center;
   border-radius: 10px;
-  max-width: 600px;
-  max-height: 80%;
+  max-width: 1000px;
+  max-height: 620px;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 20px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+}
+
+.btn-close {
+  position: absolute;
+  top: 22px;
+  right: 5px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transform: translate(0%, -50%);
+}
+
+img {
+  float: left;
+  margin-right: 20px;
+  width: 400px;
+  height: 300px;
+  object-fit: cover;
+}
+
+#info-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 60px;
+  padding-left: 60px;
+  padding-bottom: 10px;
 }

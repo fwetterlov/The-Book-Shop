@@ -11,6 +11,12 @@ async function getJSON(url) {
 }
 
 async function start() {
+  const shoppingCartButton = document.getElementById("shoppingcart");
+  shoppingCartButton.addEventListener("click", function () {
+    // Your code to handle the button click goes here
+    console.log("Shopping cart button clicked!");
+  });
+
   books = await getJSON('/books.json');
   getCategories(books);
   getAuthors(books);
@@ -160,33 +166,36 @@ function displayBooks() {
 
   document.querySelector('#product-container').innerHTML = productsHtml;
 
-  const shoppingCartButton = document.getElementById("shoppingcart");
-  shoppingCartButton.addEventListener("click", function () {
-    // Your code to handle the button click goes here
-    console.log("Shopping cart button clicked!");
-  });
-
   // Attach a click event listener to each "Details" button
   const detailsButtons = document.querySelectorAll('.details-button');
   for (let i = 0; i < detailsButtons.length; i++) {
     detailsButtons[i].addEventListener('click', function (event) {
       const title = this.dataset.title;
       const book = books.find((book) => book.title === title);
-      console.log(book);
 
       let detailsHtml = "";
       detailsHtml += /*html*/`
       <div class="modal" id="modal-content">
-        <div class="modal-header">
-          <h2>${book.title}</h2>
-          <button class="close-button">&times;</button>
-        </div>
-        <div class="modal-body">
+        <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" data-mdb-ripple-color="dark"></button>
+        <div id="details">
+          <h4>${book.title}</h4>
+          <hr width="100%" color="grey" />
           <img src="${book.imagePath}" alt="${book.title}">
-          <p>Author: ${book.author}</p>
-          <p>Category: ${book.category}</p>
-          <p>Description: ${book.description}</p>
-          <p>Price: $${book.price}</p>
+          <p style="font-size: 15px;">${book.description}</p>
+          <hr width="100%" color="grey" />
+          <div class="container" id="info-container">
+            <div class="row">
+              <div class="col-sm-4 mb-4 mb-sm-0" id="info-row">
+                <p style="font-size: 14px; color: grey;">Author: ${book.author}</p>
+              </div>
+              <div class="col-sm-4 mb-4 mb-sm-0" id="info-row">
+                <p style="font-size: 14px; color: grey;">Price: ${book.price}kr</p>
+              </div>
+              <div class="col-sm-4" id="info-row">
+                <button type="button" class="btn btn-light detail-add-button" data-mdb-ripple-color="dark" data-title="${book.title}">Add to cart</button></p>
+              </div>
+            </div>      
+          </div>
         </div>
       </div>
       `;
@@ -194,9 +203,17 @@ function displayBooks() {
       //document.body.insertAdjacentHTML('beforeend', detailsHtml);
       document.querySelector('.modal-container').innerHTML = detailsHtml;
 
-      const closeButton = document.querySelector('.close-button');
+      const closeButton = document.querySelector('.btn-close');
       closeButton.addEventListener('click', function (event) {
         document.querySelector('.modal-container').innerHTML = "";
+      });
+
+      // Attach a click event listener to each "Details" button
+      const addButton = document.querySelector('.detail-add-button');
+      addButton.addEventListener('click', function (event) {
+        const title = this.dataset.title;
+        const book = books.find((book) => book.title === title);
+        console.log(book)
       });
     });
   }
