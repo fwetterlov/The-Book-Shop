@@ -11,12 +11,6 @@ async function getJSON(url) {
 }
 
 async function start() {
-  const shoppingCartButton = document.getElementById("shoppingcart");
-  shoppingCartButton.addEventListener("click", function () {
-    // Your code to handle the button click goes here
-    console.log("Shopping cart button clicked!");
-  });
-
   books = await getJSON('/books.json');
   getCategories(books);
   getAuthors(books);
@@ -107,6 +101,12 @@ function addFiltersAndSort() {
 
 function displayBooks() {
 
+  const shoppingCartButton = document.getElementById("shoppingcart");
+  shoppingCartButton.addEventListener("click", function () {
+    // Your code to handle the button click goes here
+    console.log("Shopping cart button clicked!");
+  });
+
   let matchingArray = getMatchingArray(chosenFilter);
   let filteredBooks;
   switch (matchingArray) {
@@ -170,8 +170,7 @@ function displayBooks() {
   const detailsButtons = document.querySelectorAll('.details-button');
   for (let i = 0; i < detailsButtons.length; i++) {
     detailsButtons[i].addEventListener('click', function (event) {
-      const title = this.dataset.title;
-      const book = books.find((book) => book.title === title);
+      const book = sortedBooks[i - 1];
 
       let detailsHtml = "";
       detailsHtml += /*html*/`
