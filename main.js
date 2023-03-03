@@ -158,8 +158,8 @@ function displayBooks() {
         <p class ="author">${sortedBooks[i].author}</p>
         <p class="price">${sortedBooks[i].price.toFixed(2)}kr</p>
         <p>${sortedBooks[i].category}</p>
-        <p><button type="button" class="btn btn-light details-button" data-mdb-ripple-color="dark" data-title="${sortedBooks[i].title}">Details</button>
-        <button type="button" class="btn btn-light add-button" data-mdb-ripple-color="dark" data-title="${sortedBooks[i].title}">Add to cart</button></p>
+        <p><button type="button" class="btn btn-light details-button" id="detailsbutton" data-mdb-ripple-color="dark">Details</button>
+        <button type="button" class="btn btn-light add-button" data-mdb-ripple-color="dark">Add to cart</button></p>
       </div>
       `;
   }
@@ -167,10 +167,10 @@ function displayBooks() {
   document.querySelector('#product-container').innerHTML = productsHtml;
 
   // Attach a click event listener to each "Details" button
-  const detailsButtons = document.querySelectorAll('.details-button');
+  const detailsButtons = document.querySelectorAll('#detailsbutton');
   for (let i = 0; i < detailsButtons.length; i++) {
+    const book = sortedBooks[i];
     detailsButtons[i].addEventListener('click', function (event) {
-      const book = sortedBooks[i - 1];
 
       let detailsHtml = "";
       detailsHtml += /*html*/`
