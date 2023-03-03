@@ -1,6 +1,6 @@
 import { sortByPriceAsc, sortByPriceDec, sortByTitleAsc, sortByTitleDec, sortByAuthorAsc, sortByAuthorDec } from "./sort";
 
-let books, shopCart, chosenFilter = "All", chosenSort, categories = [], authors = [],
+let books, shopCart = [], chosenFilter = "All", chosenSort, categories = [], authors = [],
   priceIntervall = ["0-200", "201-300", "301-400", "401-500", "501-600", "601-700"];
 
 async function getJSON(url) {
@@ -97,16 +97,53 @@ function addFiltersAndSort() {
     chosenSort = event.target.value.toLowerCase();
     displayBooks();
   });
-}
-
-function displayBooks() {
 
   const shoppingCartButton = document.getElementById("shoppingcart");
   shoppingCartButton.addEventListener("click", function () {
-    // Your code to handle the button click goes here
-    console.log("Shopping cart button clicked!");
-  });
+    console.log(shopCart);
+    let shopCartHtml = "";
+    shopCartHtml += /*html*/`
+    <div class="modal" id="modal-content">
+      <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close" data-mdb-ripple-color="dark"></button>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
 
+    // Loop through the books in shopCart and create a row for each one
+    for (let i = 0; i < shopCart.length; i++) {
+      let book = shopCart[i];
+      shopCartHtml += /*html*/`
+      <tr>
+        <td>${book.title}</td>
+        <td>${book.price}</td>
+      </tr>
+    `;
+    }
+
+    // Close the table element
+    shopCartHtml += /*html*/`
+        </tbody>
+      </table>
+    </div>
+  `;
+
+    //document.body.insertAdjacentHTML('beforeend', detailsHtml);
+    document.querySelector('.modal-container').innerHTML = shopCartHtml;
+
+    const closeButton = document.querySelector('.btn-close');
+    closeButton.addEventListener('click', function (event) {
+      document.querySelector('.modal-container').innerHTML = "";
+    });
+  });
+}
+
+function displayBooks() {
   let matchingArray = getMatchingArray(chosenFilter);
   let filteredBooks;
   switch (matchingArray) {
@@ -159,7 +196,7 @@ function displayBooks() {
         <p class="price">${sortedBooks[i].price.toFixed(2)}kr</p>
         <p>${sortedBooks[i].category}</p>
         <p><button type="button" class="btn btn-light details-button" id="detailsbutton" data-mdb-ripple-color="dark">Details</button>
-        <button type="button" class="btn btn-light add-button" data-mdb-ripple-color="dark">Add to cart</button></p>
+        <button type="button" class="btn btn-light add-button" id="add" data-mdb-ripple-color="dark">Add to cart</button></p>
       </div>
       `;
   }
@@ -210,9 +247,8 @@ function displayBooks() {
       // Attach a click event listener to each "Details" button
       const addButton = document.querySelector('.detail-add-button');
       addButton.addEventListener('click', function (event) {
-        const title = this.dataset.title;
-        const book = books.find((book) => book.title === title);
         console.log(book)
+        shopCart.push(book);
       });
     });
   }
@@ -220,10 +256,10 @@ function displayBooks() {
   // Attach a click event listener to each "Details" button
   const addButtons = document.querySelectorAll('.add-button');
   for (let i = 0; i < addButtons.length; i++) {
+    const book = sortedBooks[i];
     addButtons[i].addEventListener('click', function (event) {
-      const title = this.dataset.title;
-      const book = books.find((book) => book.title === title);
       console.log(book)
+      shopCart.push(book);
     });
   }
 
