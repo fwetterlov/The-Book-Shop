@@ -180,3 +180,12 @@ img {
   padding-left: 60px;
   padding-bottom: 10px;
 }
+
+#remove-button:hover {
+  background-color: pink;
+}
+
+.checkout-button {
+  float: right;
+  margin-bottom: 10px;
+}
