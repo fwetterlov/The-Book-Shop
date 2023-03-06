@@ -126,12 +126,21 @@ function displayShoppingCart() {
     document.querySelector('.modal-container').innerHTML = "";
   });
 
-  const removeButtons = document.querySelectorAll('#remove-button');
+  const removeButtons = document.querySelectorAll('.remove-button');
   for (let i = 0; i < removeButtons.length; i++) {
     removeButtons[i].addEventListener('click', function (event) {
-      console.log("quantity--;");
+      const bookTitle = this.parentNode.parentNode.querySelector('td:first-child').textContent;
+      const bookIndex = shopCart.findIndex((book) => book.title === bookTitle);
+      shopCart.splice(bookIndex, 1);
+      console.log(bookIndex);
+      displayShoppingCart();
     });
   }
+
+  const checkoutButton = document.querySelector('.checkout-button');
+  checkoutButton.addEventListener('click', function (event) {
+    alert("Checkout is not functional yet!");
+  });
 }
 
 function addFiltersAndSort() {
