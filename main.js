@@ -44,7 +44,7 @@ function getMatchingArray(searchTerm) {
   } else if (priceIntervall.includes(searchTerm)) {
     return priceIntervall;
   } else {
-    return books; // No match found
+    return books;
   }
 }
 
@@ -68,6 +68,54 @@ function getBookDetails(shopCart) {
     }
   }
   return Object.values(bookDetails);
+}
+
+function filterBooks() {
+  let matchingArray = getMatchingArray(chosenFilter);
+  let filteredBooks;
+  switch (matchingArray) {
+    case categories:
+      filteredBooks = books.filter(book => book.category === chosenFilter);
+      break;
+    case authors:
+      filteredBooks = books.filter(book => book.author.includes(chosenFilter));
+      break;
+    case priceIntervall:
+      const [minPrice, maxPrice] = chosenFilter.split('-').map(parseFloat);
+      filteredBooks = books.filter(book => book.price >= minPrice && book.price <= maxPrice);
+      break;
+    default:
+      filteredBooks = books;
+      break;
+  }
+  return filteredBooks;
+}
+
+function sortingBooks(filteredBooks) {
+  let sortedBooks;
+  switch (chosenSort) {
+    case "title ascending":
+      sortedBooks = sortByTitleAsc(filteredBooks);
+      break;
+    case "title descending":
+      sortedBooks = sortByTitleDec(filteredBooks);
+      break;
+    case "price ascending":
+      sortedBooks = sortByPriceAsc(filteredBooks);
+      break;
+    case "price descending":
+      sortedBooks = sortByPriceDec(filteredBooks);
+      break;
+    case "author ascending":
+      sortedBooks = sortByAuthorAsc(filteredBooks)
+      break;
+    case "author descending":
+      sortedBooks = sortByAuthorDec(filteredBooks)
+      break;
+    default:
+      sortedBooks = filteredBooks;
+  }
+  return sortedBooks;
 }
 
 function displayShoppingCart() {
@@ -118,7 +166,6 @@ function displayShoppingCart() {
       </div>
     `;
 
-  //document.body.insertAdjacentHTML('beforeend', detailsHtml);
   document.querySelector('.modal-container').innerHTML = shopCartHtml;
 
   const closeButton = document.querySelector('.btn-close');
@@ -201,47 +248,7 @@ function addFiltersAndSort() {
 }
 
 function displayBooks() {
-  let matchingArray = getMatchingArray(chosenFilter);
-  let filteredBooks;
-  switch (matchingArray) {
-    case categories:
-      filteredBooks = books.filter(book => book.category === chosenFilter);
-      break;
-    case authors:
-      filteredBooks = books.filter(book => book.author.includes(chosenFilter));
-      break;
-    case priceIntervall:
-      const [minPrice, maxPrice] = chosenFilter.split('-').map(parseFloat);
-      filteredBooks = books.filter(book => book.price >= minPrice && book.price <= maxPrice);
-      break;
-    default:
-      filteredBooks = books;
-      break;
-  }
-
-  let sortedBooks;
-  switch (chosenSort) {
-    case "title ascending":
-      sortedBooks = sortByTitleAsc(filteredBooks);
-      break;
-    case "title descending":
-      sortedBooks = sortByTitleDec(filteredBooks);
-      break;
-    case "price ascending":
-      sortedBooks = sortByPriceAsc(filteredBooks);
-      break;
-    case "price descending":
-      sortedBooks = sortByPriceDec(filteredBooks);
-      break;
-    case "author ascending":
-      sortedBooks = sortByAuthorAsc(filteredBooks)
-      break;
-    case "author descending":
-      sortedBooks = sortByAuthorDec(filteredBooks)
-      break;
-    default:
-      sortedBooks = filteredBooks;
-  }
+  let sortedBooks = sortingBooks(filterBooks());
 
   let productsHtml = "";
   for (let i = 0; i < sortedBooks.length; i++) {
@@ -260,7 +267,6 @@ function displayBooks() {
 
   document.querySelector('#product-container').innerHTML = productsHtml;
 
-  // Attach a click event listener to each "Details" button
   const detailsButtons = document.querySelectorAll('#detailsbutton');
   for (let i = 0; i < detailsButtons.length; i++) {
     const book = sortedBooks[i];
@@ -293,7 +299,6 @@ function displayBooks() {
       </div>
       `;
 
-      //document.body.insertAdjacentHTML('beforeend', detailsHtml);
       document.querySelector('.modal-container').innerHTML = detailsHtml;
 
       const closeButton = document.querySelector('.btn-close');
@@ -301,7 +306,6 @@ function displayBooks() {
         document.querySelector('.modal-container').innerHTML = "";
       });
 
-      // Attach a click event listener to each "Details" button
       const addButton = document.querySelector('.detail-add-button');
       addButton.addEventListener('click', function (event) {
         console.log(book)
@@ -310,7 +314,6 @@ function displayBooks() {
     });
   }
 
-  // Attach a click event listener to each "Details" button
   const addButtons = document.querySelectorAll('.add-button');
   for (let i = 0; i < addButtons.length; i++) {
     const book = sortedBooks[i];
